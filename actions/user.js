@@ -8,7 +8,7 @@ export async function updateUser() {
 
   const user = await db.user.findUnique({
   where: {
-    clerkUserID: userId,
+    clerkUserId: userId,
   },
 });
 
@@ -73,7 +73,7 @@ export async function getUserOnboardingStatus() {
 
   const user = await db.user.findUnique({
   where: {
-    clerkUserID: userId,
+    clerkUserId: userId,
   },
 });
 
@@ -82,7 +82,7 @@ export async function getUserOnboardingStatus() {
   try {
     const user = await db.user.findUnique({
       where: {
-        clerkUserID: userId,
+        clerkUserId: userId,
       },
       select: {
         industry: true,
