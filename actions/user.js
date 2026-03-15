@@ -1,6 +1,7 @@
 "use server";
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
+import { generateAIInsights } from "./dashboard";
 
 export async function updateUser(data) {
   const { userId } = await auth();
@@ -26,17 +27,14 @@ export async function updateUser(data) {
           },
         });
 
-        // IF industry doesn't exist, create it with default values
+        // If industry insight doesn't exist, generate real AI data
         if (!industryInsight) {
+          const insights = await generateAIInsights(data.industry);
+
           industryInsight = await tx.industryInsight.create({
             data: {
               industry: data.industry,
-              salaryRanges: [],
-              growthRate: 0,
-              demandLevel: "Medium",
-              topSkills: [],
-              marketOutlook: "Neutral",
-              keyTrends: [],
+              ...insights,
               nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             },
           });
@@ -57,7 +55,7 @@ export async function updateUser(data) {
         return { updatedUser, industryInsight };
       },
       {
-        timeout: 10000,
+        timeout: 30000, // increased timeout to allow AI generation
       },
     );
     return result.updatedUser;
