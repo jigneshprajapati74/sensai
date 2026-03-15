@@ -20,9 +20,9 @@ export const onboardingSchema = z.object({
   skills: z.string().transform((val) =>
     val
       ? val
-        .split(",")
-        .map((skill) => skill.trim())
-        .filter(Boolean)
+          .split(",")
+          .map((skill) => skill.trim())
+          .filter(Boolean)
       : undefined
   ),
 });
@@ -63,4 +63,11 @@ export const resumeSchema = z.object({
   experience: z.array(entrySchema),
   education: z.array(entrySchema),
   projects: z.array(entrySchema),
+});
+
+export const coverSchema = z.object({
+  jobTitle: z.string().min(1, "Job title is required"),
+  companyName: z.string().min(1, "Company name is required"),
+  jobDescription: z.string().min(1, "Job description is required"),
+  skills: z.string().optional(),
 });
