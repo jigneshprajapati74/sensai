@@ -5,8 +5,10 @@ export default async function MainLayout({ children }) {
   await checkUser();
 
   return (
-    <div className="container mx-auto mt-24 mb-20">
-      {children}
-    </div>
+    <main className="min-h-screen w-full overflow-y-auto overflow-x-hidden">
+      <div className="container mx-auto mt-24 mb-20">
+        {children}
+      </div>
+    </main>
   );
 }
