@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 
-const intern = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Sensai - AI Career Coach",
@@ -14,13 +14,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: dark,
-      }}>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${intern.className}`}
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ClerkProvider
+          appearance={{
+            baseTheme: dark,
+          }}
         >
           <ThemeProvider
             attribute="class"
@@ -31,17 +30,20 @@ export default function RootLayout({ children }) {
             {/* Header */}
             <Header />
 
-            <main className="min-h-screen">{children}</main>
+            {/* Main Content */}
+            <main className="min-h-screen">
+              {children}
+            </main>
 
-            {/* Footer  */}
+            {/* Footer */}
             <footer className="bg-muted/50 py-12">
               <div className="container text-center text-grey-200 mx-auto px-4">
                 <p>Made with ❤️ by Jignesh</p>
               </div>
             </footer>
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
