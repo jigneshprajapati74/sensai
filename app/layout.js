@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
             <Header />
 
             {/* Main Content */}
-            <main className="min-h-screen">
+            <main className="min-h-screen w-full">
               {children}
             </main>
 
