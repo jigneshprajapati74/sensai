@@ -151,6 +151,39 @@ This project is deployed on **Vercel**. To deploy your own instance:
 
 ---
 
+## 🚧 Project Status
+
+> ⚠️ **This project is currently under active development.**
+
+SensAI is functional and live, but still being improved. Here's the current status:
+
+### ✅ Working
+- User authentication (Clerk)
+- AI Resume Builder with PDF export
+- AI Cover Letter Generator
+- Industry Insights dashboard
+- Mock Interview with AI-generated questions
+
+### 🔧 In Progress / Known Issues
+- [ ] Some UI bugs being fixed across pages
+- [ ] Performance improvements for AI response speed
+- [ ] Mobile responsiveness improvements
+- [ ] Interview feedback scoring system needs refinement
+- [ ] Resume template variety (more templates coming)
+- [ ] Cover letter saving & history feature
+- [ ] Better error handling for AI API failures
+- [ ] Dark/light theme inconsistencies being resolved
+
+### 🗺️ Upcoming Features
+- [ ] LinkedIn profile integration
+- [ ] Job application tracker
+- [ ] AI-powered job matching
+- [ ] Multi-language support
+
+> 💡 Found a bug? Please [open an issue](https://github.com/jigneshprajapati74/sensai/issues) — contributions are welcome!
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Here's how you can help:
