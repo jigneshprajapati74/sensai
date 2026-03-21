@@ -346,7 +346,9 @@ export default function MediaStudio({ initialUsage, initialGenerations }) {
               (latestGeneration.previewUrl || latestGeneration.resultUrl) ? (
               <div className="space-y-4 rounded-xl border p-5">
                 <video
-                  src={latestGeneration.previewUrl || latestGeneration.resultUrl}
+                  src={
+                    latestGeneration.previewUrl || latestGeneration.resultUrl
+                  }
                   controls
                   className="w-full rounded-xl border"
                 />
@@ -429,7 +431,14 @@ export default function MediaStudio({ initialUsage, initialGenerations }) {
 
                       <p className="font-medium">{item.prompt}</p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(item.createdAt).toLocaleString()}
+                        {new Date(item.createdAt).toLocaleString("en-IN", {
+                          timeZone: "Asia/Kolkata",
+                          year: "numeric",
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </p>
                     </div>
 
