@@ -1,11 +1,9 @@
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-
-const inter = Inter({ subsets: ["latin"] });
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {
   title: "Sensai - AI Career Coach",
@@ -15,7 +13,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body>
         <ClerkProvider
           appearance={{
             baseTheme: dark,
@@ -41,6 +39,7 @@ export default function RootLayout({ children }) {
                 <p>Made with ❤️ by Jignesh</p>
               </div>
             </footer>
+            <Toaster richColors />
           </ThemeProvider>
         </ClerkProvider>
       </body>

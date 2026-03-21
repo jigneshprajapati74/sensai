@@ -1,4 +1,4 @@
-import { getIndustryInsights } from "@/actions/dashboard";
+import { getDashboardCredits, getIndustryInsights } from "@/actions/dashboard";
 import DashboardView from "./_components/dashboard-view";
 import { getUserOnboardingStatus } from "@/actions/user";
 import { redirect } from "next/navigation";
@@ -12,11 +12,14 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const insights = await getIndustryInsights();
+  const [insights, credits] = await Promise.all([
+    getIndustryInsights(),
+    getDashboardCredits(),
+  ]);
 
   return (
     <div className="container mx-auto">
-      <DashboardView insights={insights} />
+      <DashboardView insights={insights} credits={credits} />
     </div>
   );
 }

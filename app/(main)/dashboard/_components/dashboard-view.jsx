@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 import React from "react";
 import {
   BarChart,
@@ -16,7 +16,10 @@ import {
   TrendingUp,
   TrendingDown,
   Brain,
+  Wallet,
+  ImageIcon,
 } from "lucide-react";
+
 import { format, formatDistanceToNow } from "date-fns";
 import {
   Card,
@@ -28,7 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
-const DashboardView = ({ insights }) => {
+const DashboardView = ({ insights, credits }) => {
   // Transform salary data for the chart
   const salaryData = insights.salaryRanges.map((range) => ({
     name: range.role,
@@ -75,12 +78,18 @@ const DashboardView = ({ insights }) => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Badge variant="outline">Last updated: {lastUpdatedDate}</Badge>
+
+        <Link href="/ai-media">
+          <Badge className="cursor-pointer px-3 py-2 text-sm">
+            Buy Credits / Generate Media
+          </Badge>
+        </Link>
       </div>
 
       {/* Market Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -139,6 +148,40 @@ const DashboardView = ({ insights }) => {
                 </Badge>
               ))}
             </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Credit Balance
+            </CardTitle>
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {credits?.creditBalance ?? 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Available credits for media generation
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Free Images Left
+            </CardTitle>
+            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {credits?.freeImageGenerationsRemaining ?? 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {credits?.freeImageGenerationsUsed ?? 0} of{" "}
+              {credits?.freeImageLimit ?? 3} used
+            </p>
           </CardContent>
         </Card>
       </div>

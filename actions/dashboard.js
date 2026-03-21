@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -65,4 +65,29 @@ export async function getIndustryInsights() {
   }
 
   return user.industryInsight;
+}
+
+export async function getDashboardCredits() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+    select: {
+      creditBalance: true,
+      freeImageGenerationsUsed: true,
+    },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  return {
+    creditBalance: user.creditBalance,
+    freeImageGenerationsUsed: user.freeImageGenerationsUsed,
+    freeImageLimit: 3,
+    freeImageGenerationsRemaining: Math.max(
+      0,
+      3 - user.freeImageGenerationsUsed,
+    ),
+  };
 }

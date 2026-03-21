@@ -16,6 +16,7 @@ import {
   FileText,
   GraduationCap,
   PenBox,
+  ImagePlus,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -74,6 +75,16 @@ const Header = async () => {
                       <span>Cover Letter</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      href={"/ai-media"}
+                      className="flex items-center gap-2"
+                    >
+                      <ImagePlus className="h-4 w-4" />
+                      <span>AI Media</span>
+                    </Link>
+                  </DropdownMenuItem>
+
                   <DropdownMenuItem>
                     <Link
                       href={"/interview"}

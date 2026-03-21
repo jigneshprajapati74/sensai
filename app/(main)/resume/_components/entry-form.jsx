@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parse } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { entrySchema } from "@/app/lib/schema";
-import { Sparkles, PlusCircle, X, Pencil, Save, Loader2 } from "lucide-react";
+import { Sparkles, PlusCircle, X, Loader2 } from "lucide-react";
 import { improveWithAI } from "@/actions/resume";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
@@ -31,11 +31,12 @@ export function EntryForm({ type, entries, onChange }) {
   const [isAdding, setIsAdding] = useState(false);
 
   const {
+    control,
     register,
     handleSubmit: handleValidation,
     formState: { errors },
     reset,
-    watch,
+    getValues,
     setValue,
   } = useForm({
     resolver: zodResolver(entrySchema),
@@ -49,7 +50,15 @@ export function EntryForm({ type, entries, onChange }) {
     },
   });
 
-  const current = watch("current");
+  const current = useWatch({
+    control,
+    name: "current",
+  });
+
+  const description = useWatch({
+    control,
+    name: "description",
+  });
 
   const handleAdd = handleValidation((data) => {
     const formattedEntry = {
@@ -89,14 +98,13 @@ export function EntryForm({ type, entries, onChange }) {
 
   // Replace handleImproveDescription with this
   const handleImproveDescription = async () => {
-    const description = watch("description");
     if (!description) {
       toast.error("Please enter a description first");
       return;
     }
 
     await improveWithAIFn({
-      current: description,
+      current: getValues("description"),
       type: type.toLowerCase(), // 'experience', 'education', or 'project'
     });
   };
@@ -225,7 +233,7 @@ export function EntryForm({ type, entries, onChange }) {
               variant="ghost"
               size="sm"
               onClick={handleImproveDescription}
-              disabled={isImproving || !watch("description")}
+              disabled={isImproving || !description}
             >
               {isImproving ? (
                 <>

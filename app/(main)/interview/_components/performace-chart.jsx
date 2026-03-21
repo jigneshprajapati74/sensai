@@ -16,21 +16,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
 export default function PerformanceChart({ assessments }) {
-  const [chartData, setChartData] = useState([]);
-
-  useEffect(() => {
-    if (assessments) {
-      const formattedData = assessments.map((assessment) => ({
-        date: format(new Date(assessment.createdAt), "MMM dd"),
-        score: assessment.quizScore,
-      }));
-      setChartData(formattedData);
-    }
-  }, [assessments]);
+  const chartData = (assessments ?? []).map((assessment) => ({
+    date: format(new Date(assessment.createdAt), "MMM dd"),
+    score: assessment.quizScore,
+  }));
 
   return (
     <Card>
@@ -41,7 +33,7 @@ export default function PerformanceChart({ assessments }) {
         <CardDescription>Your quiz scores over time</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="w-full h-[300px]">
+        <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -51,7 +43,7 @@ export default function PerformanceChart({ assessments }) {
                 content={({ active, payload }) => {
                   if (active && payload?.length) {
                     return (
-                      <div className="bg-background border rounded-lg p-2 shadow-md">
+                      <div className="rounded-lg border bg-background p-2 shadow-md">
                         <p className="text-sm font-medium">
                           Score: {payload[0].value}%
                         </p>
@@ -61,6 +53,7 @@ export default function PerformanceChart({ assessments }) {
                       </div>
                     );
                   }
+
                   return null;
                 }}
               />

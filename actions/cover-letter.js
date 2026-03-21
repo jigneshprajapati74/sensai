@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -95,7 +95,7 @@ export async function getCoverLetter(id) {
 
   if (!user) throw new Error("User not found");
 
-  return await db.coverLetter.findUnique({
+  return await db.coverLetter.findFirst({
     where: {
       id,
       userId: user.id,
@@ -113,10 +113,22 @@ export async function deleteCoverLetter(id) {
 
   if (!user) throw new Error("User not found");
 
-  return await db.coverLetter.delete({
+  const coverLetter = await db.coverLetter.findFirst({
     where: {
       id,
       userId: user.id,
     },
   });
+
+  if (!coverLetter) {
+    throw new Error("Cover letter not found");
+  }
+
+  await db.coverLetter.delete({
+    where: {
+      id,
+    },
+  });
+
+  return coverLetter;
 }

@@ -25,6 +25,41 @@ import { entriesToMarkdown } from "@/app/lib/helper";
 import { resumeSchema } from "@/app/lib/schema";
 import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
 
+function getContactMarkdown(contactInfo = {}, fullName = "") {
+  const parts = [];
+
+  if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
+  if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
+  if (contactInfo.linkedin)
+    parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
+  if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
+
+  if (parts.length === 0) {
+    return "";
+  }
+
+  const displayName = fullName?.trim() || "Your Name";
+
+  return `## <div align="center">${displayName}</div>
+        \n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`;
+}
+
+function getCombinedContent(formValues, fullName) {
+  const { contactInfo, summary, skills, experience, education, projects } =
+    formValues;
+
+  return [
+    getContactMarkdown(contactInfo, fullName),
+    summary && `## Professional Summary\n\n${summary}`,
+    skills && `## Skills\n\n${skills}`,
+    entriesToMarkdown(experience, "Work Experience"),
+    entriesToMarkdown(education, "Education"),
+    entriesToMarkdown(projects, "Projects"),
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
 export default function ResumeBuilder({ initialContent }) {
   const [activeTab, setActiveTab] = useState("edit");
   const [previewContent, setPreviewContent] = useState(initialContent);
@@ -66,10 +101,10 @@ export default function ResumeBuilder({ initialContent }) {
   // Update preview content when form values change
   useEffect(() => {
     if (activeTab === "edit") {
-      const newContent = getCombinedContent();
+      const newContent = getCombinedContent(formValues, user?.fullName);
       setPreviewContent(newContent ? newContent : initialContent);
     }
-  }, [formValues, activeTab]);
+  }, [activeTab, formValues, initialContent, user?.fullName]);
 
   // Handle save result
   useEffect(() => {
@@ -80,35 +115,6 @@ export default function ResumeBuilder({ initialContent }) {
       toast.error(saveError.message || "Failed to save resume");
     }
   }, [saveResult, saveError, isSaving]);
-
-  const getContactMarkdown = () => {
-    const { contactInfo } = formValues;
-    const parts = [];
-    if (contactInfo.email) parts.push(`📧 ${contactInfo.email}`);
-    if (contactInfo.mobile) parts.push(`📱 ${contactInfo.mobile}`);
-    if (contactInfo.linkedin)
-      parts.push(`💼 [LinkedIn](${contactInfo.linkedin})`);
-    if (contactInfo.twitter) parts.push(`🐦 [Twitter](${contactInfo.twitter})`);
-
-    return parts.length > 0
-      ? `## <div align="center">${user.fullName}</div>
-        \n\n<div align="center">\n\n${parts.join(" | ")}\n\n</div>`
-      : "";
-  };
-
-  const getCombinedContent = () => {
-    const { summary, skills, experience, education, projects } = formValues;
-    return [
-      getContactMarkdown(),
-      summary && `## Professional Summary\n\n${summary}`,
-      skills && `## Skills\n\n${skills}`,
-      entriesToMarkdown(experience, "Work Experience"),
-      entriesToMarkdown(education, "Education"),
-      entriesToMarkdown(projects, "Projects"),
-    ]
-      .filter(Boolean)
-      .join("\n\n");
-  };
 
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -132,15 +138,14 @@ export default function ResumeBuilder({ initialContent }) {
     }
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
     try {
       const formattedContent = previewContent
         .replace(/\n/g, "\n") // Normalize newlines
         .replace(/\n\s*\n/g, "\n\n") // Normalize multiple newlines to double newlines
         .trim();
 
-      console.log(previewContent, formattedContent);
-      await saveResumeFn(previewContent);
+      await saveResumeFn(formattedContent);
     } catch (error) {
       console.error("Save error:", error);
     }

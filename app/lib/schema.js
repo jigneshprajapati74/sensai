@@ -71,3 +71,13 @@ export const coverSchema = z.object({
   jobDescription: z.string().min(1, "Job description is required"),
   skills: z.string().optional(),
 });
+
+export const mediaGenerationSchema = z.object({
+  prompt: z
+    .string()
+    .min(10, "Prompt must be at least 10 characters")
+    .max(1000, "Prompt cannot exceed 1000 characters"),
+  mediaType: z.enum(["image", "video"], {
+    errorMap: () => ({ message: "Please select image or video" }),
+  }),
+});
