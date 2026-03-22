@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Toaster } from "@/components/ui/sonner";
+import ScrollRestorer from "@/components/ScrollRestorer";
 
 export const metadata = {
   title: "Sensai - AI Career Coach",
@@ -25,11 +26,14 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
+            {/* Fixes Radix Dialog leaving overflow:hidden on body after navigation */}
+            <ScrollRestorer />
+
             {/* Header */}
             <Header />
 
             {/* Main Content */}
-            <main className="min-h-screen w-full">
+            <main className="min-h-screen w-full pt-16">
               {children}
             </main>
 
