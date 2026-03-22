@@ -5,6 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
 [![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io)
 [![Gemini AI](https://img.shields.io/badge/Google-Gemini_AI-4285F4?style=for-the-badge&logo=google)](https://ai.google.dev)
+[![Replicate](https://img.shields.io/badge/Replicate-AI_Media-000000?style=for-the-badge&logo=replicate)](https://replicate.com)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 **Your intelligent career companion — from resume to dream job.**
@@ -15,7 +16,7 @@
 
 ## 📌 What is SensAI?
 
-**SensAI** is a full-stack AI career coaching platform that helps job seekers at every step of their journey — from building a standout resume to acing mock interviews. Powered by **Google Gemini AI**, SensAI provides real-time, personalized career guidance tailored to your industry and goals.
+**SensAI** is a full-stack AI career coaching platform that helps job seekers at every step of their journey — from building a standout resume to acing mock interviews. Powered by **Google Gemini AI** and **Replicate API**, SensAI provides real-time, personalized career guidance and AI-generated media tailored to your industry and goals.
 
 Whether you're a fresher or a seasoned professional, SensAI makes career growth smarter, faster, and more accessible.
 
@@ -43,10 +44,15 @@ Whether you're a fresher or a seasoned professional, SensAI makes career growth 
 - Multiple tone options (professional, creative, confident)
 - Edit with a built-in Markdown editor
 
-### 🎨 AI Media Studio
-- Generate professional images and videos using AI
-- Powered by Replicate API
-- Save and manage your media generations
+### 🎨 AI Media Studio *(New Feature)*
+- Generate professional **images** and **videos** using AI via [Replicate API](https://replicate.com)
+- **Image model:** `black-forest-labs/flux-dev` (free tier)
+- **Video model:** `minimax/video-01` (free tier)
+- **3 free image generations** per user — no credits needed to start
+- Credit-based system for paid generations (1 credit/image, 5 credits/video)
+- Full **generation history** — browse all past images and videos
+- Live preview of latest result right in the UI
+- Test credit purchase system (for development/demo)
 
 ---
 
@@ -56,7 +62,7 @@ Whether you're a fresher or a seasoned professional, SensAI makes career growth 
 |---|---|
 | **Framework** | Next.js 16 (App Router) |
 | **AI Engine** | Google Gemini AI |
-| **Image/Video AI** | Replicate API |
+| **Image/Video AI** | Replicate API (`flux-dev`, `minimax/video-01`) |
 | **Authentication** | Clerk |
 | **Database** | Supabase (PostgreSQL) |
 | **ORM** | Prisma 7 + pg adapter |
@@ -79,7 +85,8 @@ Whether you're a fresher or a seasoned professional, SensAI makes career growth 
 - A [Clerk](https://clerk.com) account
 - A [Google Gemini](https://ai.google.dev) API key
 - A [Supabase](https://supabase.com) account (PostgreSQL)
-- A [Replicate](https://replicate.com) API key
+- A [Replicate](https://replicate.com) API key *(required for AI Media Studio)*
+- An [Inngest](https://inngest.com) account
 
 ### Installation
 
@@ -100,30 +107,51 @@ cp .env.example .env
 Create a `.env` file in the root with the following:
 
 ```env
+# ──────────────────────────────────────────
 # Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
+# Get from: https://dashboard.clerk.com
+# ──────────────────────────────────────────
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxxxxxxxxxxxxxxxxxxx
+CLERK_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxx
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/onboarding
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
 
-# Database (Supabase)
-# Pooled connection - for app runtime
-DATABASE_URL="postgresql://postgres.xxxx:PASSWORD@aws-1-ap-southeast-2.pooler.supabase.com:6543/postgres"
-# Direct connection - for migrations
+# ──────────────────────────────────────────
+# Database (Supabase PostgreSQL)
+# Get from: https://supabase.com/dashboard → Project Settings → Database
+# ──────────────────────────────────────────
+# Pooled connection (Transaction mode :6543) — used by app at runtime
+DATABASE_URL="postgresql://postgres.xxxx:PASSWORD@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres"
+# Direct connection (:5432) — used by Prisma migrations only
 DIRECT_URL="postgresql://postgres:PASSWORD@db.xxxx.supabase.co:5432/postgres"
 
+# ──────────────────────────────────────────
 # Google Gemini AI
-GEMINI_API_KEY=your_gemini_api_key
+# Get from: https://aistudio.google.com/app/apikey
+# ──────────────────────────────────────────
+GEMINI_API_KEY=AIzaxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# Replicate AI (Image/Video Generation)
-REPLICATE_API_KEY=your_replicate_api_key
+# ──────────────────────────────────────────
+# Replicate API — AI Image & Video Generation
+# Get from: https://replicate.com/account/api-tokens
+# Used by: AI Media Studio (image + video generation)
+# Models used:
+#   Image → black-forest-labs/flux-dev  (free tier)
+#   Video → minimax/video-01            (free tier)
+# ──────────────────────────────────────────
+REPLICATE_API_KEY=r8_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-# Inngest (Background Jobs)
-INNGEST_EVENT_KEY=your_inngest_event_key
-INNGEST_SIGNING_KEY=your_inngest_signing_key
+# ──────────────────────────────────────────
+# Inngest — Background Jobs
+# Get from: https://app.inngest.com/settings/api-keys
+# ──────────────────────────────────────────
+INNGEST_EVENT_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+INNGEST_SIGNING_KEY=signkey-prod-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
+
+> **Note:** `REPLICATE_API_KEY` is required for the AI Media Studio feature. Without it, image and video generation will throw an error. You can get a free API key at [replicate.com](https://replicate.com) — no credit card required to start.
 
 ### Database Setup
 
@@ -145,22 +173,133 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ---
 
+## 🎨 AI Media Studio — Deep Dive
+
+The AI Media Studio is powered entirely by the [Replicate API](https://replicate.com) — a platform that hosts thousands of open-source AI models.
+
+### How it works
+
+```
+User enters prompt
+        ↓
+Server Action (actions/media.js)
+        ↓
+POST /v1/models/{model}/predictions  ← Replicate API
+        ↓
+Poll prediction status every 3s
+        ↓
+Return image/video URL
+        ↓
+Save to database (MediaGeneration table)
+        ↓
+Display in UI
+```
+
+### Models Used
+
+| Type | Model | Details |
+|---|---|---|
+| **Image** | `black-forest-labs/flux-dev` | Fast, high-quality image generation. Output: WebP. Free tier available. |
+| **Video** | `minimax/video-01` | Text-to-video generation with built-in prompt optimizer. Output: MP4. Free tier available. |
+
+### Credit System
+
+| Action | Cost |
+|---|---|
+| Image generation (first 3) | **Free** |
+| Image generation (after free limit) | **1 credit** |
+| Video generation | **5 credits** |
+
+### Getting a Replicate API Key
+
+1. Go to [replicate.com](https://replicate.com) and sign up (free)
+2. Navigate to **Account → API Tokens**
+3. Click **Create token**
+4. Copy the token (starts with `r8_`)
+5. Add it to your `.env` as `REPLICATE_API_KEY=r8_your_token_here`
+
+> Free accounts on Replicate include a small monthly credit allowance — enough to test both image and video generation without a credit card.
+
+### Prisma Schema (AI Media fields)
+
+The feature adds these fields/models to your database:
+
+```prisma
+model User {
+  // ... existing fields
+  creditBalance              Int               @default(0)
+  freeImageGenerationsUsed   Int               @default(0)
+  mediaGenerations           MediaGeneration[]
+  creditTransactions         CreditTransaction[]
+}
+
+model MediaGeneration {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id])
+  prompt              String
+  mediaType           String   // "image" | "video"
+  provider            String   // "replicate"
+  status              String   // "completed" | "failed"
+  resultUrl           String?
+  previewUrl          String?
+  creditsUsed         Int      @default(0)
+  usedFreeGeneration  Boolean  @default(false)
+  metadata            Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model CreditTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // "purchase" | "image_generation" | "video_generation"
+  credits     Int
+  description String?
+  createdAt   DateTime @default(now())
+}
+```
+
+---
+
 ## 📁 Project Structure
 
 ```
 sensai/
-├── app/               # Next.js App Router pages & layouts
-├── actions/           # Server actions (AI calls, DB operations)
-├── components/        # Reusable UI components
-├── hooks/             # Custom React hooks
+├── app/
+│   ├── (auth)/            # Sign-in / Sign-up pages (Clerk)
+│   ├── (main)/
+│   │   ├── ai-media/      # 🎨 AI Media Studio
+│   │   │   ├── page.jsx
+│   │   │   └── media-studio.jsx
+│   │   ├── ai-cover-letter/
+│   │   ├── dashboard/
+│   │   ├── interview/
+│   │   ├── onboarding/
+│   │   └── resume/
+│   ├── api/               # API routes (Inngest webhook, etc.)
+│   ├── lib/               # Zod schemas
+│   ├── globals.css
+│   └── layout.js
+├── actions/
+│   ├── media.js           # Replicate API calls + credit logic
+│   ├── interview.js
+│   ├── resume.js
+│   └── ...
+├── components/
+│   ├── Header.jsx
+│   ├── ScrollRestorer.jsx # Fixes Radix scroll-lock bug on navigation
+│   └── ui/                # shadcn/ui components
+├── hooks/                 # Custom React hooks
 ├── lib/
-│   └── db.js          # Prisma client with pg adapter
+│   └── db.js              # Prisma client with pg adapter
 ├── prisma/
-│   ├── schema.prisma  # Database schema
-│   └── migrations/    # Migration history
-├── data/              # Static data (industry lists, etc.)
-├── prisma.config.ts   # Prisma 7 config
-└── public/            # Static assets
+│   ├── schema.prisma      # Database schema
+│   └── migrations/
+├── data/                  # Static data (industry lists, etc.)
+├── prisma.config.ts
+└── public/
 ```
 
 ---
@@ -228,8 +367,9 @@ This project is deployed on **Vercel**. To deploy your own instance:
 
 1. Fork this repository
 2. Import into [Vercel](https://vercel.com)
-3. Add all environment variables in Vercel dashboard
-4. Deploy 🚀
+3. Add all environment variables in the Vercel dashboard (Settings → Environment Variables)
+4. Make sure to add `REPLICATE_API_KEY` for AI Media Studio to work
+5. Deploy 🚀
 
 ---
 
@@ -243,7 +383,8 @@ This project is deployed on **Vercel**. To deploy your own instance:
 - AI Cover Letter Generator
 - Industry Insights dashboard
 - Mock Interview with AI-generated questions
-- AI Media Studio (Image & Video generation)
+- **AI Media Studio** — Image & Video generation via Replicate
+- Credit system with free tier + paid credits
 - Prisma 7 + Supabase database
 
 ### 🔧 In Progress / Known Issues
@@ -251,7 +392,7 @@ This project is deployed on **Vercel**. To deploy your own instance:
 - Interview feedback scoring refinement
 - More resume templates coming
 - Better error handling for AI API failures
-- Dark/light theme inconsistencies
+- Real payment gateway integration for credits (currently test mode)
 
 ### 🗺️ Upcoming Features
 - LinkedIn profile integration
